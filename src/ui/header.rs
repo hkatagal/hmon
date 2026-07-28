@@ -1,10 +1,10 @@
 use crate::app::{App, Tab};
 use ratatui::{
+    Frame,
     layout::{Constraint, Direction, Layout, Rect},
     style::{Modifier, Style},
     text::{Line, Span},
     widgets::{Block, Borders, Paragraph, Tabs},
-    Frame,
 };
 
 pub fn render_header(f: &mut Frame, app: &App, area: Rect) {
@@ -19,7 +19,9 @@ pub fn render_header(f: &mut Frame, app: &App, area: Rect) {
         .iter()
         .map(|t| {
             let style = if *t == app.active_tab {
-                Style::default().fg(colors.secondary).add_modifier(Modifier::BOLD)
+                Style::default()
+                    .fg(colors.secondary)
+                    .add_modifier(Modifier::BOLD)
             } else {
                 Style::default().fg(colors.text)
             };
@@ -34,7 +36,11 @@ pub fn render_header(f: &mut Frame, app: &App, area: Rect) {
                 .title(" ⚡ hmon (Harish's System Monitor) "),
         )
         .select(app.active_tab as usize)
-        .highlight_style(Style::default().fg(colors.secondary).add_modifier(Modifier::BOLD));
+        .highlight_style(
+            Style::default()
+                .fg(colors.secondary)
+                .add_modifier(Modifier::BOLD),
+        );
 
     f.render_widget(tabs, chunks[0]);
 

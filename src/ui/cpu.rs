@@ -1,9 +1,9 @@
 use crate::app::App;
 use ratatui::{
+    Frame,
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Style},
     widgets::{Block, Borders, Gauge, Paragraph, Sparkline},
-    Frame,
 };
 
 pub fn render_cpu_tab(f: &mut Frame, app: &App, area: Rect) {
@@ -28,7 +28,11 @@ pub fn render_cpu_tab(f: &mut Frame, app: &App, area: Rect) {
     // Live CPU Sparkline History Chart
     let cpu_data: Vec<u64> = app.metrics.cpu_history.iter().copied().collect();
     let sparkline = Sparkline::default()
-        .block(Block::default().title(" Real-time CPU History (Last 60s) ").borders(Borders::ALL))
+        .block(
+            Block::default()
+                .title(" Real-time CPU History (Last 60s) ")
+                .borders(Borders::ALL),
+        )
         .data(&cpu_data)
         .max(100)
         .style(Style::default().fg(Color::Cyan));
@@ -55,7 +59,10 @@ pub fn render_cpu_tab(f: &mut Frame, app: &App, area: Rect) {
                 };
 
                 let gauge = Gauge::default()
-                    .block(Block::default().title(format!(" {} ({:.1}%) - {} MHz ", core.name, usage, core.frequency_mhz)))
+                    .block(Block::default().title(format!(
+                        " {} ({:.1}%) - {} MHz ",
+                        core.name, usage, core.frequency_mhz
+                    )))
                     .gauge_style(Style::default().fg(color).bg(Color::Black))
                     .percent(usage as u16);
                 f.render_widget(gauge, core_chunks[i]);

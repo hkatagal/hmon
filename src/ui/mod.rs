@@ -1,16 +1,16 @@
-pub mod header;
 pub mod cpu;
-pub mod memory;
-pub mod processes;
 pub mod disks;
-pub mod network;
-pub mod modal;
 pub mod footer;
+pub mod header;
+pub mod memory;
+pub mod modal;
+pub mod network;
+pub mod processes;
 
 use crate::app::{App, Tab};
 use ratatui::{
-    layout::{Constraint, Direction, Layout},
     Frame,
+    layout::{Constraint, Direction, Layout},
 };
 
 pub fn draw(f: &mut Frame, app: &App) {

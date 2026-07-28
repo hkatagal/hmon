@@ -1,9 +1,9 @@
 use crate::app::App;
 use ratatui::{
+    Frame,
     layout::Rect,
     style::Style,
     widgets::{Block, Borders, Paragraph},
-    Frame,
 };
 
 pub fn render_footer(f: &mut Frame, app: &App, area: Rect) {
@@ -15,7 +15,11 @@ pub fn render_footer(f: &mut Frame, app: &App, area: Rect) {
 
     let footer = Paragraph::new(msg)
         .style(Style::default().fg(colors.accent))
-        .block(Block::default().borders(Borders::ALL).title(" Status & Controls "));
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .title(" Status & Controls "),
+        );
 
     f.render_widget(footer, area);
 }

@@ -1,9 +1,9 @@
 use crate::app::App;
 use ratatui::{
+    Frame,
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Style},
     widgets::{Block, Borders, Cell, Row, Table},
-    Frame,
 };
 
 pub fn render_disks_tab(f: &mut Frame, app: &App, area: Rect) {
@@ -12,16 +12,26 @@ pub fn render_disks_tab(f: &mut Frame, app: &App, area: Rect) {
         .constraints([Constraint::Min(5)])
         .split(area);
 
-    let header_cells = ["Disk", "Mount Point", "File System", "Used Space", "Total Space"]
-        .iter()
-        .map(|h| Cell::from(*h).style(Style::default().fg(Color::Yellow)));
+    let header_cells = [
+        "Disk",
+        "Mount Point",
+        "File System",
+        "Used Space",
+        "Total Space",
+    ]
+    .iter()
+    .map(|h| Cell::from(*h).style(Style::default().fg(Color::Yellow)));
     let header = Row::new(header_cells).height(1).bottom_margin(1);
 
     let rows = app.metrics.disks.iter().map(|disk| {
         let total_gb = disk.total_bytes as f64 / 1e9;
         let avail_gb = disk.available_bytes as f64 / 1e9;
         let used_gb = total_gb - avail_gb;
-        let used_percent = if total_gb > 0.0 { (used_gb / total_gb * 100.0) as u16 } else { 0 };
+        let used_percent = if total_gb > 0.0 {
+            (used_gb / total_gb * 100.0) as u16
+        } else {
+            0
+        };
 
         let cells = vec![
             Cell::from(disk.name.clone()),
@@ -44,7 +54,11 @@ pub fn render_disks_tab(f: &mut Frame, app: &App, area: Rect) {
         ],
     )
     .header(header)
-    .block(Block::default().borders(Borders::ALL).title(format!(" Storage Drives ({}) ", app.metrics.disks.len())));
+    .block(
+        Block::default()
+            .borders(Borders::ALL)
+            .title(format!(" Storage Drives ({}) ", app.metrics.disks.len())),
+    );
 
     f.render_widget(table, chunks[0]);
 }

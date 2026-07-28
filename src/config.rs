@@ -47,16 +47,16 @@ impl ThemeName {
                 text: Color::Rgb(236, 239, 244),
             },
             ThemeName::Gruvbox => ThemeColors {
-                primary: Color::Rgb(250, 189, 47),  // Yellow
+                primary: Color::Rgb(250, 189, 47),   // Yellow
                 secondary: Color::Rgb(254, 128, 25), // Orange
-                accent: Color::Rgb(184, 187, 38),   // Green
+                accent: Color::Rgb(184, 187, 38),    // Green
                 background: Color::Reset,
                 text: Color::Rgb(235, 219, 178),
             },
             ThemeName::Cyberpunk => ThemeColors {
-                primary: Color::Rgb(255, 0, 127), // Neon Magenta
+                primary: Color::Rgb(255, 0, 127),   // Neon Magenta
                 secondary: Color::Rgb(255, 230, 0), // Yellow
-                accent: Color::Rgb(0, 255, 204),   // Neon Cyan
+                accent: Color::Rgb(0, 255, 204),    // Neon Cyan
                 background: Color::Reset,
                 text: Color::Rgb(255, 255, 255),
             },
@@ -81,16 +81,11 @@ impl Default for Config {
 
 impl Config {
     pub fn load() -> Self {
-        if let Some(config_path) = Self::config_file_path() {
-            if config_path.exists() {
-                if let Ok(content) = fs::read_to_string(&config_path) {
-                    if let Ok(cfg) = toml::from_str::<Config>(&content) {
-                        return cfg;
-                    }
-                }
-            }
-        }
-        Config::default()
+        Self::config_file_path()
+            .filter(|path| path.exists())
+            .and_then(|path| fs::read_to_string(path).ok())
+            .and_then(|content| toml::from_str::<Config>(&content).ok())
+            .unwrap_or_default()
     }
 
     fn config_file_path() -> Option<PathBuf> {

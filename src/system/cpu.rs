@@ -18,7 +18,10 @@ impl CpuMetrics {
     pub fn collect(sys: &System) -> Self {
         let global_usage = sys.global_cpu_usage();
         let cpus = sys.cpus();
-        let brand = cpus.first().map(|c| c.brand().to_string()).unwrap_or_else(|| "Generic CPU".into());
+        let brand = cpus
+            .first()
+            .map(|c| c.brand().to_string())
+            .unwrap_or_else(|| "Generic CPU".into());
 
         let cores = cpus
             .iter()

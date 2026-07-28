@@ -1,9 +1,9 @@
 use crate::app::App;
 use ratatui::{
+    Frame,
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     widgets::{Block, Borders, Clear, Paragraph},
-    Frame,
 };
 
 pub fn render_proc_modal(f: &mut Frame, app: &App) {
@@ -41,7 +41,11 @@ pub fn render_proc_modal(f: &mut Frame, app: &App) {
                 Block::default()
                     .borders(Borders::ALL)
                     .title(format!(" Inspector: {} (PID: {}) ", proc.name, proc.pid))
-                    .style(Style::default().fg(colors.primary).add_modifier(Modifier::BOLD)),
+                    .style(
+                        Style::default()
+                            .fg(colors.primary)
+                            .add_modifier(Modifier::BOLD),
+                    ),
             );
 
         f.render_widget(popup, area);

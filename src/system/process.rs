@@ -1,4 +1,4 @@
-use sysinfo::{Pid, System, ProcessesToUpdate};
+use sysinfo::{Pid, ProcessesToUpdate, System};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ProcessSortKey {
@@ -38,7 +38,11 @@ impl ProcessManager {
         Self::filter_and_sort(procs, sort_key, &query)
     }
 
-    pub fn filter_and_sort(procs: Vec<ProcInfo>, sort_key: ProcessSortKey, query: &str) -> Vec<ProcInfo> {
+    pub fn filter_and_sort(
+        procs: Vec<ProcInfo>,
+        sort_key: ProcessSortKey,
+        query: &str,
+    ) -> Vec<ProcInfo> {
         let query_lower = query.to_lowercase();
 
         let mut filtered: Vec<ProcInfo> = procs
@@ -47,16 +51,21 @@ impl ProcessManager {
                 if query_lower.is_empty() {
                     true
                 } else {
-                    p.name.to_lowercase().contains(&query_lower) || p.pid.to_string().contains(&query_lower)
+                    p.name.to_lowercase().contains(&query_lower)
+                        || p.pid.to_string().contains(&query_lower)
                 }
             })
             .collect();
 
         match sort_key {
-            ProcessSortKey::Cpu => filtered.sort_by(|a, b| b.cpu_usage.partial_cmp(&a.cpu_usage).unwrap_or(std::cmp::Ordering::Equal)),
-            ProcessSortKey::Memory => filtered.sort_by(|a, b| b.memory_bytes.cmp(&a.memory_bytes)),
-            ProcessSortKey::Pid => filtered.sort_by(|a, b| a.pid.cmp(&b.pid)),
-            ProcessSortKey::Name => filtered.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase())),
+            ProcessSortKey::Cpu => filtered.sort_by(|a, b| {
+                b.cpu_usage
+                    .partial_cmp(&a.cpu_usage)
+                    .unwrap_or(std::cmp::Ordering::Equal)
+            }),
+            ProcessSortKey::Memory => filtered.sort_by_key(|b| std::cmp::Reverse(b.memory_bytes)),
+            ProcessSortKey::Pid => filtered.sort_by_key(|a| a.pid),
+            ProcessSortKey::Name => filtered.sort_by_key(|a| a.name.to_lowercase()),
         }
 
         filtered
@@ -79,9 +88,27 @@ mod tests {
 
     fn mock_processes() -> Vec<ProcInfo> {
         vec![
-            ProcInfo { pid: 100, name: "zsh".into(), cpu_usage: 5.0, memory_bytes: 10_000, status: "Run".into() },
-            ProcInfo { pid: 20, name: "cargo".into(), cpu_usage: 85.0, memory_bytes: 500_000, status: "Run".into() },
-            ProcInfo { pid: 300, name: "hmon".into(), cpu_usage: 12.0, memory_bytes: 50_000, status: "Run".into() },
+            ProcInfo {
+                pid: 100,
+                name: "zsh".into(),
+                cpu_usage: 5.0,
+                memory_bytes: 10_000,
+                status: "Run".into(),
+            },
+            ProcInfo {
+                pid: 20,
+                name: "cargo".into(),
+                cpu_usage: 85.0,
+                memory_bytes: 500_000,
+                status: "Run".into(),
+            },
+            ProcInfo {
+                pid: 300,
+                name: "hmon".into(),
+                cpu_usage: 12.0,
+                memory_bytes: 50_000,
+                status: "Run".into(),
+            },
         ]
     }
 
@@ -106,8 +133,8 @@ mod tests {
         let procs = mock_processes();
         let res = ProcessManager::filter_and_sort(procs, ProcessSortKey::Cpu, "");
         assert_eq!(res[0].name, "cargo"); // 85.0%
-        assert_eq!(res[1].name, "hmon");  // 12.0%
-        assert_eq!(res[2].name, "zsh");   // 5.0%
+        assert_eq!(res[1].name, "hmon"); // 12.0%
+        assert_eq!(res[2].name, "zsh"); // 5.0%
     }
 
     #[test]
@@ -115,8 +142,8 @@ mod tests {
         let procs = mock_processes();
         let res = ProcessManager::filter_and_sort(procs, ProcessSortKey::Memory, "");
         assert_eq!(res[0].name, "cargo"); // 500k
-        assert_eq!(res[1].name, "hmon");  // 50k
-        assert_eq!(res[2].name, "zsh");   // 10k
+        assert_eq!(res[1].name, "hmon"); // 50k
+        assert_eq!(res[2].name, "zsh"); // 10k
     }
 
     #[test]

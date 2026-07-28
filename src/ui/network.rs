@@ -1,9 +1,9 @@
 use crate::app::App;
 use ratatui::{
+    Frame,
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Style},
     widgets::{Block, Borders, Cell, Row, Table},
-    Frame,
 };
 
 pub fn render_network_tab(f: &mut Frame, app: &App, area: Rect) {
@@ -12,9 +12,16 @@ pub fn render_network_tab(f: &mut Frame, app: &App, area: Rect) {
         .constraints([Constraint::Min(5)])
         .split(area);
 
-    let header_cells = ["Interface", "MAC Address", "Download Rate", "Upload Rate", "Total Received", "Total Transmitted"]
-        .iter()
-        .map(|h| Cell::from(*h).style(Style::default().fg(Color::Yellow)));
+    let header_cells = [
+        "Interface",
+        "MAC Address",
+        "Download Rate",
+        "Upload Rate",
+        "Total Received",
+        "Total Transmitted",
+    ]
+    .iter()
+    .map(|h| Cell::from(*h).style(Style::default().fg(Color::Yellow)));
     let header = Row::new(header_cells).height(1).bottom_margin(1);
 
     let rows = app.metrics.network.interfaces.iter().map(|iface| {

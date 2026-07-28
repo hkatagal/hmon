@@ -13,7 +13,14 @@ pub enum Tab {
 }
 
 impl Tab {
-    pub const ALL: [Tab; 6] = [Tab::Overview, Tab::Cpu, Tab::Memory, Tab::Processes, Tab::Disks, Tab::Network];
+    pub const ALL: [Tab; 6] = [
+        Tab::Overview,
+        Tab::Cpu,
+        Tab::Memory,
+        Tab::Processes,
+        Tab::Disks,
+        Tab::Network,
+    ];
 
     pub fn title(&self) -> &'static str {
         match self {
@@ -58,13 +65,16 @@ impl App {
             is_searching: false,
             show_proc_modal: false,
             config,
-            status_message: Some("Welcome to hmon! Press 't' to toggle theme, 'Enter' for process details.".into()),
+            status_message: Some(
+                "Welcome to hmon! Press 't' to toggle theme, 'Enter' for process details.".into(),
+            ),
             should_quit: false,
         }
     }
 
     pub fn tick(&mut self) {
-        self.metrics.refresh(&mut self.sys, self.sort_key, &self.search_query);
+        self.metrics
+            .refresh(&mut self.sys, self.sort_key, &self.search_query);
         // Bound selection index within processes length
         if !self.metrics.processes.is_empty() {
             if self.selected_proc_index >= self.metrics.processes.len() {
@@ -83,15 +93,19 @@ impl App {
 
     pub fn previous_tab(&mut self) {
         let current = self.active_tab as usize;
-        let prev = if current == 0 { Tab::ALL.len() - 1 } else { current - 1 };
+        let prev = if current == 0 {
+            Tab::ALL.len() - 1
+        } else {
+            current - 1
+        };
         self.active_tab = Tab::ALL[prev];
     }
 
     pub fn next_process(&mut self) {
-        if !self.metrics.processes.is_empty() {
-            if self.selected_proc_index + 1 < self.metrics.processes.len() {
-                self.selected_proc_index += 1;
-            }
+        if !self.metrics.processes.is_empty()
+            && self.selected_proc_index + 1 < self.metrics.processes.len()
+        {
+            self.selected_proc_index += 1;
         }
     }
 
@@ -133,7 +147,8 @@ impl App {
             if crate::system::ProcessManager::kill_process(pid) {
                 self.status_message = Some(format!("Killed process {} (PID: {})", name, pid));
             } else {
-                self.status_message = Some(format!("Failed to kill process {} (PID: {})", name, pid));
+                self.status_message =
+                    Some(format!("Failed to kill process {} (PID: {})", name, pid));
             }
         }
     }

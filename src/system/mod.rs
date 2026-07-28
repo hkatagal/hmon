@@ -1,17 +1,17 @@
 pub mod cpu;
-pub mod memory;
-pub mod process;
 pub mod disk;
+pub mod memory;
 pub mod network;
+pub mod process;
 
 pub use cpu::CpuMetrics;
-pub use memory::MemoryMetrics;
-pub use process::{ProcessManager, ProcessSortKey, ProcInfo};
 pub use disk::DiskInfo;
+pub use memory::MemoryMetrics;
 pub use network::NetworkMetrics;
+pub use process::{ProcInfo, ProcessManager, ProcessSortKey};
 
-use sysinfo::System;
 use std::collections::VecDeque;
+use sysinfo::System;
 
 pub struct SysMetrics {
     pub cpu: CpuMetrics,
@@ -30,11 +30,25 @@ pub struct SysMetrics {
 impl SysMetrics {
     pub fn new() -> Self {
         Self {
-            cpu: CpuMetrics { global_usage: 0.0, brand: "".into(), cores: vec![] },
-            memory: MemoryMetrics { total_mem_bytes: 0, used_mem_bytes: 0, free_mem_bytes: 0, total_swap_bytes: 0, used_swap_bytes: 0 },
+            cpu: CpuMetrics {
+                global_usage: 0.0,
+                brand: "".into(),
+                cores: vec![],
+            },
+            memory: MemoryMetrics {
+                total_mem_bytes: 0,
+                used_mem_bytes: 0,
+                free_mem_bytes: 0,
+                total_swap_bytes: 0,
+                used_swap_bytes: 0,
+            },
             processes: vec![],
             disks: vec![],
-            network: NetworkMetrics { interfaces: vec![], total_rx_rate_sec: 0, total_tx_rate_sec: 0 },
+            network: NetworkMetrics {
+                interfaces: vec![],
+                total_rx_rate_sec: 0,
+                total_tx_rate_sec: 0,
+            },
             host_name: System::host_name().unwrap_or_else(|| "Unknown".into()),
             os_name: System::name().unwrap_or_else(|| "OS".into()),
             os_version: System::os_version().unwrap_or_default(),
@@ -62,6 +76,7 @@ impl SysMetrics {
         if self.ram_history.len() >= 60 {
             self.ram_history.pop_front();
         }
-        self.ram_history.push_back(self.memory.ram_usage_percent() as u64);
+        self.ram_history
+            .push_back(self.memory.ram_usage_percent() as u64);
     }
 }
