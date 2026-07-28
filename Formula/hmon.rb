@@ -1,8 +1,8 @@
 class Hmon < Formula
   desc "Fast, interactive, terminal-based system resource monitor written in Rust"
   homepage "https://github.com/hkatagal/hmon"
-  url "https://github.com/hkatagal/hmon/archive/refs/tags/v0.1.0.tar.gz"
-  sha256 "PENDING_RELEASE_SHA256"
+  url "https://static.crates.io/crates/hmon/hmon-0.1.0.crate"
+  sha256 "ac6c4ec01a4d1e6b99dee2ef252b536d9fa66f807c686d3e1bd9355594396258"
   license "MIT"
 
   depends_on "rust" => :build
