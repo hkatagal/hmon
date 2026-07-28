@@ -2,7 +2,7 @@ use crate::app::App;
 use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Style},
-    widgets::{Block, Borders, Gauge, Paragraph},
+    widgets::{Block, Borders, Gauge, Paragraph, Sparkline},
     Frame,
 };
 
@@ -11,6 +11,7 @@ pub fn render_memory_tab(f: &mut Frame, app: &App, area: Rect) {
         .direction(Direction::Vertical)
         .constraints([
             Constraint::Length(4), // RAM Gauge
+            Constraint::Length(3), // RAM Sparkline History Chart
             Constraint::Length(4), // Swap Gauge
             Constraint::Min(4),    // Detailed Breakdown
         ])
@@ -32,6 +33,15 @@ pub fn render_memory_tab(f: &mut Frame, app: &App, area: Rect) {
         .percent(ram_percent as u16);
     f.render_widget(ram_gauge, chunks[0]);
 
+    // RAM Sparkline History
+    let ram_data: Vec<u64> = app.metrics.ram_history.iter().copied().collect();
+    let sparkline = Sparkline::default()
+        .block(Block::default().title(" Real-time RAM History (Last 60s) ").borders(Borders::ALL))
+        .data(&ram_data)
+        .max(100)
+        .style(Style::default().fg(Color::Yellow));
+    f.render_widget(sparkline, chunks[1]);
+
     // Swap Gauge
     let swap_gauge = Gauge::default()
         .block(Block::default().title(format!(
@@ -42,7 +52,7 @@ pub fn render_memory_tab(f: &mut Frame, app: &App, area: Rect) {
         )).borders(Borders::ALL))
         .gauge_style(Style::default().fg(Color::Magenta).bg(Color::Black))
         .percent(swap_percent as u16);
-    f.render_widget(swap_gauge, chunks[1]);
+    f.render_widget(swap_gauge, chunks[2]);
 
     // Detailed Breakdown
     let details = Paragraph::new(format!(
@@ -54,5 +64,5 @@ pub fn render_memory_tab(f: &mut Frame, app: &App, area: Rect) {
         ram.used_swap_bytes as f64 / 1e9,
     ))
     .block(Block::default().borders(Borders::ALL).title(" Memory Details "));
-    f.render_widget(details, chunks[2]);
+    f.render_widget(details, chunks[3]);
 }

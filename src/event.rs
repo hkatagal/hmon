@@ -42,6 +42,7 @@ pub fn handle_events(app: &mut App, tick_rate: Duration) -> io::Result<()> {
                 KeyCode::Char('3') => app.active_tab = Tab::Memory,
                 KeyCode::Char('4') => app.active_tab = Tab::Processes,
                 KeyCode::Char('5') => app.active_tab = Tab::Disks,
+                KeyCode::Char('6') => app.active_tab = Tab::Network,
 
                 // Process Selection & Scrolling
                 KeyCode::Down | KeyCode::Char('j') => app.next_process(),

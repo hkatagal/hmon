@@ -8,10 +8,11 @@ pub enum Tab {
     Memory = 2,
     Processes = 3,
     Disks = 4,
+    Network = 5,
 }
 
 impl Tab {
-    pub const ALL: [Tab; 5] = [Tab::Overview, Tab::Cpu, Tab::Memory, Tab::Processes, Tab::Disks];
+    pub const ALL: [Tab; 6] = [Tab::Overview, Tab::Cpu, Tab::Memory, Tab::Processes, Tab::Disks, Tab::Network];
 
     pub fn title(&self) -> &'static str {
         match self {
@@ -20,6 +21,7 @@ impl Tab {
             Tab::Memory => "3: Memory",
             Tab::Processes => "4: Processes",
             Tab::Disks => "5: Storage",
+            Tab::Network => "6: Network",
         }
     }
 }
@@ -135,7 +137,7 @@ mod tests {
         let mut app = App::new();
         assert_eq!(app.active_tab, Tab::Overview);
         app.previous_tab();
-        assert_eq!(app.active_tab, Tab::Disks);
+        assert_eq!(app.active_tab, Tab::Network);
     }
 
     #[test]

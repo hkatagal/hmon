@@ -3,6 +3,7 @@ pub mod cpu;
 pub mod memory;
 pub mod processes;
 pub mod disks;
+pub mod network;
 pub mod footer;
 
 use crate::app::{App, Tab};
@@ -30,6 +31,7 @@ pub fn draw(f: &mut Frame, app: &App) {
         Tab::Cpu => cpu::render_cpu_tab(f, app, chunks[1]),
         Tab::Memory => memory::render_memory_tab(f, app, chunks[1]),
         Tab::Disks => disks::render_disks_tab(f, app, chunks[1]),
+        Tab::Network => network::render_network_tab(f, app, chunks[1]),
     }
 
     // 3. Render Footer
