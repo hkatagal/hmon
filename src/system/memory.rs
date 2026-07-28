@@ -42,3 +42,45 @@ impl MemoryMetrics {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_ram_usage_percent_normal() {
+        let mem = MemoryMetrics {
+            total_mem_bytes: 16_000_000_000,
+            used_mem_bytes: 8_000_000_000,
+            free_mem_bytes: 8_000_000_000,
+            total_swap_bytes: 4_000_000_000,
+            used_swap_bytes: 1_000_000_000,
+        };
+        assert_eq!(mem.ram_usage_percent(), 50.0);
+    }
+
+    #[test]
+    fn test_ram_usage_percent_zero_total() {
+        let mem = MemoryMetrics {
+            total_mem_bytes: 0,
+            used_mem_bytes: 0,
+            free_mem_bytes: 0,
+            total_swap_bytes: 0,
+            used_swap_bytes: 0,
+        };
+        assert_eq!(mem.ram_usage_percent(), 0.0);
+        assert_eq!(mem.swap_usage_percent(), 0.0);
+    }
+
+    #[test]
+    fn test_swap_usage_percent() {
+        let mem = MemoryMetrics {
+            total_mem_bytes: 100,
+            used_mem_bytes: 50,
+            free_mem_bytes: 50,
+            total_swap_bytes: 200,
+            used_swap_bytes: 50,
+        };
+        assert_eq!(mem.swap_usage_percent(), 25.0);
+    }
+}

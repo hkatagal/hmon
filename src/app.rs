@@ -115,3 +115,40 @@ impl App {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_tab_navigation_next() {
+        let mut app = App::new();
+        assert_eq!(app.active_tab, Tab::Overview);
+        app.next_tab();
+        assert_eq!(app.active_tab, Tab::Cpu);
+        app.next_tab();
+        assert_eq!(app.active_tab, Tab::Memory);
+    }
+
+    #[test]
+    fn test_tab_navigation_previous_wrap() {
+        let mut app = App::new();
+        assert_eq!(app.active_tab, Tab::Overview);
+        app.previous_tab();
+        assert_eq!(app.active_tab, Tab::Disks);
+    }
+
+    #[test]
+    fn test_cycle_sort_key() {
+        let mut app = App::new();
+        assert_eq!(app.sort_key, ProcessSortKey::Cpu);
+        app.cycle_sort_key();
+        assert_eq!(app.sort_key, ProcessSortKey::Memory);
+        app.cycle_sort_key();
+        assert_eq!(app.sort_key, ProcessSortKey::Pid);
+        app.cycle_sort_key();
+        assert_eq!(app.sort_key, ProcessSortKey::Name);
+        app.cycle_sort_key();
+        assert_eq!(app.sort_key, ProcessSortKey::Cpu);
+    }
+}
