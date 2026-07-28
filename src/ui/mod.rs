@@ -4,6 +4,7 @@ pub mod memory;
 pub mod processes;
 pub mod disks;
 pub mod network;
+pub mod modal;
 pub mod footer;
 
 use crate::app::{App, Tab};
@@ -36,4 +37,7 @@ pub fn draw(f: &mut Frame, app: &App) {
 
     // 3. Render Footer
     footer::render_footer(f, app, chunks[2]);
+
+    // 4. Render Inspector Popup Modal (if open)
+    modal::render_proc_modal(f, app);
 }

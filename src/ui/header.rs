@@ -1,13 +1,15 @@
 use crate::app::{App, Tab};
 use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
-    style::{Color, Modifier, Style},
+    style::{Modifier, Style},
     text::{Line, Span},
     widgets::{Block, Borders, Paragraph, Tabs},
     Frame,
 };
 
 pub fn render_header(f: &mut Frame, app: &App, area: Rect) {
+    let colors = app.config.theme.colors();
+
     let chunks = Layout::default()
         .direction(Direction::Horizontal)
         .constraints([Constraint::Percentage(55), Constraint::Percentage(45)])
@@ -17,9 +19,9 @@ pub fn render_header(f: &mut Frame, app: &App, area: Rect) {
         .iter()
         .map(|t| {
             let style = if *t == app.active_tab {
-                Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)
+                Style::default().fg(colors.secondary).add_modifier(Modifier::BOLD)
             } else {
-                Style::default().fg(Color::Gray)
+                Style::default().fg(colors.text)
             };
             Line::from(Span::styled(t.title(), style))
         })
@@ -32,21 +34,22 @@ pub fn render_header(f: &mut Frame, app: &App, area: Rect) {
                 .title(" ⚡ hmon (Harish's System Monitor) "),
         )
         .select(app.active_tab as usize)
-        .highlight_style(Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD));
+        .highlight_style(Style::default().fg(colors.secondary).add_modifier(Modifier::BOLD));
 
     f.render_widget(tabs, chunks[0]);
 
     let mins = app.metrics.uptime_secs / 60;
     let hours = mins / 60;
     let sys_info = Paragraph::new(format!(
-        "{} | {} {} | Up: {}h {}m",
+        "{} | {} {} | Up: {}h {}m | Theme: {:?}",
         app.metrics.host_name,
         app.metrics.os_name,
         app.metrics.os_version,
         hours,
-        mins % 60
+        mins % 60,
+        app.config.theme
     ))
-    .style(Style::default().fg(Color::Cyan))
+    .style(Style::default().fg(colors.primary))
     .block(Block::default().borders(Borders::ALL).title(" System "));
 
     f.render_widget(sys_info, chunks[1]);

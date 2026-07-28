@@ -5,6 +5,17 @@ use std::{io, time::Duration};
 pub fn handle_events(app: &mut App, tick_rate: Duration) -> io::Result<()> {
     if event::poll(tick_rate)? {
         if let Event::Key(key) = event::read()? {
+            // Handle Inspector Modal Open
+            if app.show_proc_modal {
+                match key.code {
+                    KeyCode::Enter | KeyCode::Esc | KeyCode::Char('q') => {
+                        app.toggle_proc_modal();
+                    }
+                    _ => {}
+                }
+                return Ok(());
+            }
+
             // Handle Search Input Mode
             if app.is_searching {
                 match key.code {
@@ -36,7 +47,7 @@ pub fn handle_events(app: &mut App, tick_rate: Duration) -> io::Result<()> {
                 KeyCode::Right | KeyCode::Char('l') => app.next_tab(),
                 KeyCode::Left | KeyCode::Char('h') => app.previous_tab(),
 
-                // Direct Tab Jump Keys 1-5
+                // Direct Tab Jump Keys 1-6
                 KeyCode::Char('1') => app.active_tab = Tab::Overview,
                 KeyCode::Char('2') => app.active_tab = Tab::Cpu,
                 KeyCode::Char('3') => app.active_tab = Tab::Memory,
@@ -48,7 +59,9 @@ pub fn handle_events(app: &mut App, tick_rate: Duration) -> io::Result<()> {
                 KeyCode::Down | KeyCode::Char('j') => app.next_process(),
                 KeyCode::Up | KeyCode::Char('k') => app.previous_process(),
 
-                // Sort & Search
+                // Actions & Modals
+                KeyCode::Enter => app.toggle_proc_modal(),
+                KeyCode::Char('t') => app.cycle_theme(),
                 KeyCode::Char('s') => app.cycle_sort_key(),
                 KeyCode::Char('/') => {
                     app.is_searching = true;

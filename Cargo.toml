@@ -2,10 +2,19 @@
 name = "hmon"
 version = "0.1.0"
 edition = "2024"
+authors = ["Harish Katagal <hkatagal@users.noreply.github.com>"]
+description = "A fast, interactive, terminal-based system resource monitor written in Rust."
+readme = "README.md"
+repository = "https://github.com/hkatagal/hmon"
+license = "MIT"
+keywords = ["system-monitor", "tui", "cli", "ratatui", "sysinfo"]
+categories = ["command-line-utilities", "visualization"]
 
 [dependencies]
 sysinfo = "0.33"
 ratatui = "0.29"
 crossterm = "0.28"
 clap = { version = "4.5", features = ["derive"] }
-
+serde = { version = "1.0", features = ["derive"] }
+toml = "0.8"
+directories = "5.0"

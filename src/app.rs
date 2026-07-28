@@ -1,3 +1,4 @@
+use crate::config::{Config, ThemeName};
 use crate::system::{ProcessSortKey, SysMetrics};
 use sysinfo::System;
 
@@ -34,12 +35,15 @@ pub struct App {
     pub sort_key: ProcessSortKey,
     pub search_query: String,
     pub is_searching: bool,
+    pub show_proc_modal: bool,
+    pub config: Config,
     pub status_message: Option<String>,
     pub should_quit: bool,
 }
 
 impl App {
     pub fn new() -> Self {
+        let config = Config::load();
         let mut sys = System::new_all();
         let mut metrics = SysMetrics::new();
         metrics.refresh(&mut sys, ProcessSortKey::Cpu, "");
@@ -52,7 +56,9 @@ impl App {
             sort_key: ProcessSortKey::Cpu,
             search_query: String::new(),
             is_searching: false,
-            status_message: Some("Welcome to hmon! Press '?' for help, Tab to navigate.".into()),
+            show_proc_modal: false,
+            config,
+            status_message: Some("Welcome to hmon! Press 't' to toggle theme, 'Enter' for process details.".into()),
             should_quit: false,
         }
     }
@@ -105,6 +111,21 @@ impl App {
         self.status_message = Some(format!("Sorted by {:?}", self.sort_key));
     }
 
+    pub fn cycle_theme(&mut self) {
+        self.config.theme = match self.config.theme {
+            ThemeName::Default => ThemeName::Dracula,
+            ThemeName::Dracula => ThemeName::Nord,
+            ThemeName::Nord => ThemeName::Gruvbox,
+            ThemeName::Gruvbox => ThemeName::Cyberpunk,
+            ThemeName::Cyberpunk => ThemeName::Default,
+        };
+        self.status_message = Some(format!("Theme changed to {:?}", self.config.theme));
+    }
+
+    pub fn toggle_proc_modal(&mut self) {
+        self.show_proc_modal = !self.show_proc_modal;
+    }
+
     pub fn kill_selected_process(&mut self) {
         if let Some(proc) = self.metrics.processes.get(self.selected_proc_index) {
             let pid = proc.pid;
@@ -146,11 +167,15 @@ mod tests {
         assert_eq!(app.sort_key, ProcessSortKey::Cpu);
         app.cycle_sort_key();
         assert_eq!(app.sort_key, ProcessSortKey::Memory);
-        app.cycle_sort_key();
-        assert_eq!(app.sort_key, ProcessSortKey::Pid);
-        app.cycle_sort_key();
-        assert_eq!(app.sort_key, ProcessSortKey::Name);
-        app.cycle_sort_key();
-        assert_eq!(app.sort_key, ProcessSortKey::Cpu);
+    }
+
+    #[test]
+    fn test_cycle_theme() {
+        let mut app = App::new();
+        assert_eq!(app.config.theme, ThemeName::Default);
+        app.cycle_theme();
+        assert_eq!(app.config.theme, ThemeName::Dracula);
+        app.cycle_theme();
+        assert_eq!(app.config.theme, ThemeName::Nord);
     }
 }

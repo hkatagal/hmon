@@ -1,4 +1,5 @@
 mod app;
+mod config;
 mod event;
 mod system;
 mod ui;
@@ -21,7 +22,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Create App state instance
     let mut app = App::new();
-    let tick_rate = Duration::from_millis(500);
+    let tick_rate = Duration::from_millis(app.config.refresh_interval_ms);
 
     // Main Event & Render Loop
     while !app.should_quit {
