@@ -29,3 +29,8 @@ __pycache__/
 *.py[cod]
 venv/
 .venv/
+
+
+# Added by cargo
+
+/target
